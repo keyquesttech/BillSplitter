@@ -23,6 +23,9 @@ export function normalizeDraft(draft) {
     rekaFullPriceExtras: draft.rekaFullPriceExtras || [],
     matiasNote: draft.matiasNote || '',
     rekaNote: draft.rekaNote || '',
+    matiasDiscounts: draft.matiasDiscounts || [],
+    rekaDiscounts: draft.rekaDiscounts || [],
+    splitPercent: draft.splitPercent ?? 50,
     bankDetails: { ...DEFAULT_BANK, ...(draft.bankDetails || {}) }
   };
 }

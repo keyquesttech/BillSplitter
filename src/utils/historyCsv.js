@@ -9,12 +9,14 @@ const LIST_COLUMNS = [
   'matiasExtras',
   'rekaExtras',
   'matiasFullPriceExtras',
-  'rekaFullPriceExtras'
+  'rekaFullPriceExtras',
+  'matiasDiscounts',
+  'rekaDiscounts'
 ];
 
 const HEADER = [
   'id', 'period', 'dueDate', 'timestamp',
-  'netTotal', 'eachNetTotal', 'matiasTotalDue', 'rekaTotalDue',
+  'netTotal', 'eachNetTotal', 'matiasTotalDue', 'rekaTotalDue', 'splitPercent',
   'matiasName', 'rekaName', 'matiasNote', 'rekaNote',
   'bankName', 'bankBankName', 'bankSortCode', 'bankAccountNumber',
   ...LIST_COLUMNS
@@ -32,6 +34,7 @@ export function historyToCSV(invoices) {
       inv.eachNetTotal ?? '',
       inv.matiasTotalDue ?? '',
       inv.rekaTotalDue ?? '',
+      inv.splitPercent ?? 50,
       inv.names?.matias ?? '',
       inv.names?.reka ?? '',
       inv.matiasNote ?? '',
@@ -84,6 +87,7 @@ export function csvToHistory(text) {
       eachNetTotal: num('eachNetTotal'),
       matiasTotalDue: num('matiasTotalDue'),
       rekaTotalDue: num('rekaTotalDue'),
+      splitPercent: get('splitPercent') === '' ? 50 : num('splitPercent'),
       names: { matias: get('matiasName') || 'Matias', reka: get('rekaName') || 'Réka' },
       matiasNote: get('matiasNote'),
       rekaNote: get('rekaNote'),
@@ -97,7 +101,9 @@ export function csvToHistory(text) {
       matiasExtras: list('matiasExtras'),
       rekaExtras: list('rekaExtras'),
       matiasFullPriceExtras: list('matiasFullPriceExtras'),
-      rekaFullPriceExtras: list('rekaFullPriceExtras')
+      rekaFullPriceExtras: list('rekaFullPriceExtras'),
+      matiasDiscounts: list('matiasDiscounts'),
+      rekaDiscounts: list('rekaDiscounts')
     });
   }
 

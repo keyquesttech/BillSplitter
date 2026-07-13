@@ -37,6 +37,9 @@ const defaultDraft = {
   rekaFullPriceExtras: [],
   matiasNote: '',
   rekaNote: '',
+  matiasDiscounts: [],
+  rekaDiscounts: [],
+  splitPercent: 50,
   bankDetails: {
     name: 'Your Name',
     bankName: 'Your Bank',

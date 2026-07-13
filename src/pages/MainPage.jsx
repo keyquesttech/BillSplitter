@@ -100,13 +100,7 @@ export default function MainPage() {
 
   const saveToHistory = async () => {
     const data = formDataRef.current;
-    const calc = calculateInvoice(
-      data.bills,
-      data.matiasExtras,
-      data.rekaExtras,
-      data.matiasFullPriceExtras,
-      data.rekaFullPriceExtras
-    );
+    const calc = calculateInvoice(data);
     const newInvoice = {
       ...data,
       id: newId(),
@@ -168,6 +162,9 @@ export default function MainPage() {
       rekaFullPriceExtras: invoice.rekaFullPriceExtras || [],
       matiasNote: invoice.matiasNote || '',
       rekaNote: invoice.rekaNote || '',
+      matiasDiscounts: invoice.matiasDiscounts || [],
+      rekaDiscounts: invoice.rekaDiscounts || [],
+      splitPercent: invoice.splitPercent ?? 50,
       bankDetails: invoice.bankDetails
     });
     handleFormChange(loadedDraft);
