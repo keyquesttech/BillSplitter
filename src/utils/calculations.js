@@ -113,6 +113,7 @@ export function calculateInvoice(data) {
 
   const matiasShareExtras = round2(shareOf(matiasItems, true) + shareOf(rekaItems, false));
   const rekaShareExtras = round2(shareOf(rekaItems, true) + shareOf(matiasItems, false));
+  const extrasTotal = round2(sumExtras(matiasItems) + sumExtras(rekaItems));
 
   const matiasBeforeDiscounts = round2(matiasBillsShare + matiasShareExtras);
   const rekaBeforeDiscounts = round2(rekaBillsShare + rekaShareExtras);
@@ -139,6 +140,9 @@ export function calculateInvoice(data) {
     rekaDiscountTotal,
     matiasTotalDue,
     rekaTotalDue,
+    extrasTotal,
+    // Grand total counts the full bills and extras, before any discounts
+    grandTotal: round2(billsRawTotal + extrasTotal),
     netTotal: round2(matiasTotalDue + rekaTotalDue)
   };
 }
