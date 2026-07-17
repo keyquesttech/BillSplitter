@@ -226,6 +226,10 @@ export function calculateInvoice(data) {
     matiasToPay,
     rekaToPay,
     netTransfer,
+    // Cross shares, for the totals card's breakdown lines:
+    // toPay = own bills share + share of the OTHER's extras − own discounts.
+    matiasShareOfRekaExtras: matiasFromReka,
+    rekaShareOfMatiasExtras: rekaFromMatias,
     extrasTotal,
     // Grand total = charged bills + all extras, so it always equals the
     // Bills card total plus the Total extras line (and the flatmates' dues
