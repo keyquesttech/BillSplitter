@@ -79,6 +79,7 @@ const InvoicePreview = forwardRef(({ data }, ref) => {
       before: calc.matiasBeforeDiscounts,
       discounts: data.matiasDiscounts || [],
       extrasShare: calc.matiasShareExtras,
+      discountTotal: calc.matiasDiscountTotal,
       total: calc.matiasTotalDue,
       note: data.matiasNote
     },
@@ -93,6 +94,7 @@ const InvoicePreview = forwardRef(({ data }, ref) => {
       before: calc.rekaBeforeDiscounts,
       discounts: data.rekaDiscounts || [],
       extrasShare: calc.rekaShareExtras,
+      discountTotal: calc.rekaDiscountTotal,
       total: calc.rekaTotalDue,
       note: data.rekaNote
     }
@@ -108,19 +110,17 @@ const InvoicePreview = forwardRef(({ data }, ref) => {
     rekaTransferSub = `${formatCurrency(rekaBillsShare)} share of bills`;
     if (calc.rekaShareOfMatiasExtras > 0) rekaTransferSub += ` + ${formatCurrency(calc.rekaShareOfMatiasExtras)} of ${names.matias}'s extras`;
     if (calc.rekaDiscountTotal > 0) rekaTransferSub += ` − ${formatCurrency(calc.rekaDiscountTotal)} discounts`;
-    if (calc.matiasDiscountTotal > 0) rekaTransferSub += ` + ${formatCurrency(calc.matiasDiscountTotal)} ${names.matias}'s discounts`;
     if (owedBack > 0) rekaTransferSub += ` − ${formatCurrency(owedBack)} owed back for ${names.reka}'s extras`;
   } else {
     rekaTransferSub = `Nothing to send — ${names.matias} covers the difference`;
   }
   // Matias's description mirrors Réka's terms from his side: her share of
   // his extras comes OFF his cost (she reimburses it), his share of her
-  // extras and her discounts go ON it, his own discounts come off (Réka
-  // covers them). It sums to his effective due.
+  // extras goes ON it, and his own discounts come off. Each person's
+  // discounts appear only on their own line. It sums to his effective due.
   let matiasDueSub = `${formatCurrency(matiasBillsShare)} share of bills`;
   if (calc.rekaShareOfMatiasExtras > 0) matiasDueSub += ` − ${formatCurrency(calc.rekaShareOfMatiasExtras)} of ${names.matias}'s extras`;
   if (owedBack > 0) matiasDueSub += ` + ${formatCurrency(owedBack)} of ${names.reka}'s extras`;
-  if (calc.rekaDiscountTotal > 0) matiasDueSub += ` + ${formatCurrency(calc.rekaDiscountTotal)} ${names.reka}'s discounts`;
   if (calc.matiasDiscountTotal > 0) matiasDueSub += ` − ${formatCurrency(calc.matiasDiscountTotal)} discounts`;
 
   const periodDate = data.period ? new Date(data.period + '-01T00:00:00Z') : null;
@@ -211,6 +211,10 @@ const InvoicePreview = forwardRef(({ data }, ref) => {
             <div className="due-card-total due-card-total-secondary due-card-total-first">
               <span>Extras total</span>
               <span>{formatCurrency(person.extrasShare)}</span>
+            </div>
+            <div className="due-card-total due-card-total-secondary">
+              <span>Discounts total</span>
+              <span>{person.discountTotal > 0 ? '−' : ''}{formatCurrency(person.discountTotal)}</span>
             </div>
             <div className="due-card-total due-card-total-secondary">
               <span>Net total</span>

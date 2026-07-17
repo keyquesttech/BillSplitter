@@ -203,11 +203,8 @@ export function calculateInvoice(data) {
 
   // The single bank transfer that settles the month, given that Matias
   // fronts all the bills: Réka's payment minus what Matias owes her for her
-  // purchases, plus Matias's personal discounts — like every other "for X"
-  // mechanic here, a discount granted to one flatmate is covered by the
-  // other (Réka's discounts reduce her transfer; Matias's increase it).
-  // Positive = Réka pays Matias; negative = Matias pays Réka.
-  const netTransfer = round2(rekaToPay - matiasFromReka + matiasDiscountTotal);
+  // purchases. Positive = Réka pays Matias; negative = Matias pays Réka.
+  const netTransfer = round2(rekaToPay - matiasFromReka);
 
   // The same transfer split by direction for the invoice's total-due lines:
   // each person's line IS the amount they send, no further math. At most one
@@ -215,13 +212,12 @@ export function calculateInvoice(data) {
   const rekaTransferDue = netTransfer > 0 ? netTransfer : 0;
   const matiasTransferDue = netTransfer < 0 ? round2(-netTransfer) : 0;
 
-  // What the month effectively costs Matias out of pocket, given he fronts
-  // all the bills: the bills total minus Réka's settling transfer. Mirrors
-  // her transfer's terms from his side — his bills share, minus what she
-  // reimburses for his extras, plus what he owes for hers, plus discounts
-  // granted to her (the collector absorbs them). The two total-due lines
-  // therefore always sum to the bills total.
-  const matiasEffectiveDue = round2(billsTotal - netTransfer);
+  // What the month effectively costs Matias, mirroring Réka's terms from
+  // his side: his bills share, minus what she reimburses for his extras,
+  // plus what he owes for hers, minus his own discounts. Discounts only
+  // ever reduce their OWN flatmate's line — they represent money settled
+  // outside the invoice, so the other side doesn't absorb them.
+  const matiasEffectiveDue = round2(billsTotal - netTransfer - rekaDiscountTotal - matiasDiscountTotal);
 
   return {
     splitPercent,
