@@ -98,14 +98,23 @@ const InvoicePreview = forwardRef(({ data }, ref) => {
     }
   ];
 
-  // Explainer under each totals-card figure: its formula with this month's
-  // numbers. Zero terms are left out so quiet months stay uncluttered.
-  const dueBreakdown = (billsShare, otherExtras, otherName, discountTotal) => {
-    let text = `${formatCurrency(billsShare)} share of bills`;
-    if (otherExtras > 0) text += ` + ${formatCurrency(otherExtras)} of ${otherName}'s extras`;
-    if (discountTotal > 0) text += ` − ${formatCurrency(discountTotal)} discounts`;
-    return text;
-  };
+  // The total-due lines are the actual transfer amounts: at most one person
+  // sends money, and their explainer shows the formula with this month's
+  // numbers (zero terms left out). The other line reads £0.00 with the reason.
+  const rekaPays = calc.netTransfer >= 0;
+  const owedBack = calc.matiasShareOfRekaExtras;
+  let rekaTransferSub;
+  if (rekaPays) {
+    rekaTransferSub = `${formatCurrency(rekaBillsShare)} share of bills`;
+    if (calc.rekaShareOfMatiasExtras > 0) rekaTransferSub += ` + ${formatCurrency(calc.rekaShareOfMatiasExtras)} of ${names.matias}'s extras`;
+    if (calc.rekaDiscountTotal > 0) rekaTransferSub += ` − ${formatCurrency(calc.rekaDiscountTotal)} discounts`;
+    if (owedBack > 0) rekaTransferSub += ` − ${formatCurrency(owedBack)} owed back for ${names.reka}'s extras`;
+  } else {
+    rekaTransferSub = `Nothing to send — ${names.matias} covers the difference`;
+  }
+  const matiasTransferSub = rekaPays
+    ? 'Nothing to send — settled by fronting the bills'
+    : `${formatCurrency(owedBack)} owed for ${names.reka}'s extras − ${formatCurrency(calc.rekaToPay)} due from ${names.reka}`;
 
   const periodDate = data.period ? new Date(data.period + '-01T00:00:00Z') : null;
   const periodLabel = periodDate && !isNaN(periodDate)
@@ -216,25 +225,25 @@ const InvoicePreview = forwardRef(({ data }, ref) => {
           <div className="grand-total-group">
             <div className="due-card-total grand-total-line">
               <span>{names.reka} total due</span>
-              <span className="grand-total-amount">{formatCurrency(calc.rekaToPay)}</span>
+              <span className="grand-total-amount">{formatCurrency(calc.rekaTransferDue)}</span>
             </div>
             <div className="due-item-sub">
-              {dueBreakdown(rekaBillsShare, calc.rekaShareOfMatiasExtras, names.matias, calc.rekaDiscountTotal)}
+              {rekaTransferSub}
             </div>
           </div>
           <div className="grand-total-group">
             <div className="due-card-total grand-total-line">
               <span>{names.matias} total due</span>
-              <span className="grand-total-amount">{formatCurrency(calc.matiasToPay)}</span>
+              <span className="grand-total-amount">{formatCurrency(calc.matiasTransferDue)}</span>
             </div>
             <div className="due-item-sub">
-              {dueBreakdown(matiasBillsShare, calc.matiasShareOfRekaExtras, names.reka, calc.matiasDiscountTotal)}
+              {matiasTransferSub}
             </div>
           </div>
           <p className="grand-total-note">
             Own purchases are paid at the shop so they're never charged to the buyer —
-            each total due is that person's share of the bills plus their share of the other's extras,
-            minus any discounts.
+            each total due is the exact amount to transfer, with anything owed back for
+            that person's own extras already taken off. £0.00 means nothing to send.
           </p>
         </div>
 

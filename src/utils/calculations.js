@@ -206,6 +206,12 @@ export function calculateInvoice(data) {
   // purchases. Positive = Réka pays Matias; negative = Matias pays Réka.
   const netTransfer = round2(rekaToPay - matiasFromReka);
 
+  // The same transfer split by direction for the invoice's total-due lines:
+  // each person's line IS the amount they send, no further math. At most one
+  // is non-zero — normally Réka's; a big Réka purchase can flip it.
+  const rekaTransferDue = netTransfer > 0 ? netTransfer : 0;
+  const matiasTransferDue = netTransfer < 0 ? round2(-netTransfer) : 0;
+
   return {
     splitPercent,
     billsTotal,
@@ -226,6 +232,8 @@ export function calculateInvoice(data) {
     matiasToPay,
     rekaToPay,
     netTransfer,
+    matiasTransferDue,
+    rekaTransferDue,
     // Cross shares, for the totals card's breakdown lines:
     // toPay = own bills share + share of the OTHER's extras − own discounts.
     matiasShareOfRekaExtras: matiasFromReka,
